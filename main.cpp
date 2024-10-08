@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
 
-#pragma region input
+#pragma region inputa
 
 		if (keys[DIK_UP]) {
 			worldOrigin.y -= 5.0f;

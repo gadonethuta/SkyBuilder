@@ -10,3 +10,7 @@ Vector2 worldOrigin = { 192.0f, 720.0f };
 /// <param name="world_origin">ワールド座標の中心</param>
 /// <returns>スクリーン座標0</returns>
 Vector2 World2Screen(Vector2 position, Vector2 world_origin);
+
+float Lerp(float from, float to, float rate);
+
+float Clamp(float value, float min, float max);
