@@ -1,6 +1,7 @@
 #include <Novice.h>
 #include <Vector2.h>
 #include "BasicFunctions.h"
+#include <Block.h>
 
 const char kWindowTitle[] = "GC1B_02_イグチ_GC1B_09_チョウイセン_GC1A_07_テュウタ_スカイビルダー";
 
@@ -17,6 +18,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Novice::Initialize(kWindowTitle, 720, 720);
 
 	int mockupGraph = Novice::LoadTexture("./Resources/Sprites/mockup1.png");
+	int blockGraph = Novice::LoadTexture("./Resources/Sprites/basicBlock.png");
+
+	
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
@@ -38,26 +42,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		} else if(keys[DIK_DOWN]) {
 			worldOrigin.y += 5.0f;
 		}
+		
+		if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+			for (int i = 0; i < kBlockNum; i++) {
+				block[i].state = DROP;
+			}
+		}
+
+		if (keys[DIK_C] && !preKeys[DIK_C]) {
+			for (int i = 0; i < kBlockNum; i++) {
+				if (!block[i].isVisible) {
+					BlockCreate(block[i], { 0,700 }, { 5, 15 });
+					break;
+				}
+			}
+		}
 
 #pragma endregion
 
 #pragma region update
-
-
+		
+		BlockUpdate();
 
 #pragma endregion
 
 #pragma region convert2Screen
 
 		playerScreenPos = World2Screen(playerPos, worldOrigin);
+		for (int i = 0; i < kBlockNum; i++) {
+			block[i].screenPos = World2Screen(block[i].pos, worldOrigin);
+		}
 
 #pragma endregion
 
 #pragma region draw
 
 		Novice::DrawSprite(0 , 0 - int(worldOrigin.y), mockupGraph, 1.0f, 1.0f, 0.0f, 0x444444FF);
-
-
+		
+		for (int i = 0; i < kBlockNum; i++) {
+			Novice::DrawSprite(int(block[i].screenPos.x- block[i].width/2), int(block[i].screenPos.y - block[i].height / 2), blockGraph, 1.0f, 1.0f, 0.0f, WHITE);
+		}
 
 		Novice::DrawEllipse(static_cast<int>(worldOrigin.x), static_cast<int>(worldOrigin.y), 10, 10, 0.0f, RED, kFillModeSolid);
 		
