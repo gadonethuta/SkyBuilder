@@ -12,11 +12,18 @@ struct Block{
 	int state;
 	int width;
 	int height;
+	
 };
 
-float windSpeed = 2.0f;
+float windSpeed = 0.0f;
 
-const int kBlockNum = 10;  //配列の数
+float quakeValue = 0.0f;
+float quakeLow = 0.0f;
+float quakeHigh = 300.0f;
+
+float highestBlockY = -1.0f;
+
+const int kBlockNum = 12;  //配列の数
 Block block[kBlockNum];
 
 enum BlockState
@@ -26,11 +33,29 @@ enum BlockState
 	IDLE,   //定点
 };
 
-void BlockCreate(Block &b, Vector2 pos, Vector2 speed){
+void BlockCreate(Block &b, Vector2 pos, Vector2 speed, int colorRand){
 		b.pos = pos;
 		b.screenPos = { 0.0f, 0.0f };
 		b.speed = speed;
-		b.wallColor = WHITE;
+		//here
+		switch (colorRand) {
+		case 0:
+			b.wallColor = 0xFFFFFFFF;
+			break;
+		case 1://red
+			b.wallColor = 0xD43867FF;
+			break;
+		case 2://blue
+			b.wallColor = 0x2438BEFF;
+			break;
+		case 3://yellow
+			b.wallColor = 0xFFBD39FF;
+			break;
+		case 4://GREEN
+			//b.wallColor = 0x42C7BBFF;
+			b.wallColor = 0x00C282FF;
+			break;
+		}
 		b.isTop = false;
 		b.isVisible = true;
 		b.state = 0;
@@ -55,17 +80,46 @@ void BlockUpdate() {
 				break;
 
 			case DROP:
+				//collision check
+				for (int j = 0; j < kBlockNum; j++) {
+					if (i != j && block[i].state == DROP && block[j].state == IDLE ) {
+						/*if (CollisionVector2(block[i].pos, block[j].pos, 30.0f, 30.0f)) {
+							block[i].speed.y = 0.0f;
+							block[i].state = IDLE;
+						}*/
+						if (CollisionRect(block[i].pos, block[j].pos, block[i].width, block[i].height) && block[j].isTop) {
+							block[i].speed.y = 0.0f;
+							block[i].state = IDLE;
+							block[i].pos.y = block[j].pos.y + block[i].height - 4.0f;
+						} else if (CollisionRect(block[i].pos, block[j].pos, block[i].width, block[i].height)) {
+							//block[i].speed.y = -5.0f;
+						}
+					}
+				}
+
 				block[i].pos.y -= block[i].speed.y;
 				block[i].pos.x += windSpeed;
 
-				if (block[i].pos.y < 0) {
-					block[i].isVisible = false;
+				if (block[i].pos.y < 0.0f) {
+					block[i].pos.y = 0.0f;
+					block[i].state = IDLE;
 				}
 				
 				break;
 
 			case IDLE:
-
+				if (block[i].pos.y > highestBlockY) {
+					block[i].isTop = true;
+					highestBlockY = block[i].pos.y;
+					for (int j = 0; j < kBlockNum; j++) {
+						if (i != j) {
+							block[j].isTop = false;
+							if (block[j].pos.y + (block[j].height * 4) < block[i].pos.y) {
+								block[j].isVisible = false;
+							}
+						}
+					}
+				}
 				break;
 			}
 		}

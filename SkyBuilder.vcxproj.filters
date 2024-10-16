@@ -122,5 +122,6 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Value.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Particle.h" />
   </ItemGroup>
 </Project>
